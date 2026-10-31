@@ -1,1 +1,22 @@
-{"expo":{"name":"GlowFit","slug":"glowfit","version":"1.0.0","orientation":"portrait","userInterfaceStyle":"dark","newArchEnabled":false,"ios":{"bundleIdentifier":"com.glowfit.app","supportsTablet":false}}}
+{
+ "expo": {
+  "name": "GlowFit",
+  "slug": "glowfit",
+  "version": "1.0.0",
+  "orientation": "portrait",
+  "userInterfaceStyle": "dark",
+  "newArchEnabled": false,
+  "ios": {
+   "bundleIdentifier": "com.glowfit.app",
+   "supportsTablet": false
+  },
+  "plugins": [
+   [
+    "expo-sensors",
+    {
+     "motionPermission": "GlowFit zählt deine Schritte."
+    }
+   ]
+  ]
+ }
+}

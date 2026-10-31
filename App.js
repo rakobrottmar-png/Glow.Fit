@@ -3,6 +3,7 @@ import {View,Text,ScrollView,Pressable,Alert,Vibration,StyleSheet,SafeAreaView,S
 import Svg,{Polyline,Circle,Rect,Line} from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useKeepAwake} from 'expo-keep-awake';
+import Today from './Today';
 import {Z,E,ST,PL,poseKey,G,BD,earned} from './data';
 
 const C={bg:'#06080a',card:'#10161b',line:'#1e2a32',ac:'#46e6d6',ac2:'#4cc3ff',tx:'#f3f8f9',mu:'#8a9aa3'};
@@ -81,7 +82,7 @@ export default function App(){
  const rings=[{v:wkH.length,g:3,l:'Training',col:C.ac,r:54},{v:wkH.reduce((a,x)=>a+x.s,0)/60,g:75,l:'Minuten',col:C.ac2,r:41},{v:wkH.reduce((a,x)=>a+x.n,0),g:50,l:'Sätze',col:'#9af0e6',r:28}];
  const E2=earned(H);
  return <SafeAreaView style={s.root}><StatusBar barStyle="light-content"/>
-  <ScrollView contentContainerStyle={{padding:16,paddingBottom:150}}>
+  <ScrollView automaticallyAdjustKeyboardInsets keyboardShouldPersistTaps="handled" contentContainerStyle={{padding:16,paddingBottom:150}}>
   {tab=='home'&&<>
    <Text style={s.h1}>GlowFit</Text><Text style={s.mu}>Dein nächster Satz.</Text>
    <View style={[s.card,s.row]}><Ring size={130} rings={rings.map(r=>({r:r.r,w:11,col:r.col,p:r.v/r.g}))}/>
@@ -91,6 +92,7 @@ export default function App(){
    {plan!='S'&&<View style={[s.card,s.row]}><View><Text style={s.b}>Dehnen danach</Text><Text style={s.mu}>5 Dehnübungen am Ende</Text></View><Pressable style={[s.sq,{width:60},str&&{backgroundColor:C.ac}]} onPress={()=>{setStr(!str);save('str',!str)}}><Text style={[s.tx,str&&{color:'#02161a'}]}>{str?'An':'Aus'}</Text></Pressable></View>}
    <View style={s.card}>{ids.map(id=><Pressable key={id} onPress={()=>setOpen(open==id?null:id)} style={s.item}><Text style={s.b}>{E[id].n}</Text><Text style={s.mu}>{E[id].sets>1?E[id].sets+' × ':''}{E[id].t}</Text>
     {open==id&&<View style={{marginTop:8}}><Fig k={poseKey[id]}/><Text style={s.sm}>{E[id].d}</Text></View>}</Pressable>)}</View></>}
+  {tab=='today'&&<Today/>}
   {tab=='glow'&&<><Text style={s.h1}>Glow-up</Text><Text style={s.mu}>Allgemeine persönliche Orientierung, keine Diät- oder Kalorienberechnung.</Text>
    <View style={s.card}>{G.map(g=><Pressable key={g[0]} onPress={()=>setOpen(open==g[0]?null:g[0])} style={s.item}><Text style={s.b}>{g[0]}</Text>{open==g[0]&&g[1].map((t,i)=><Text key={i} style={s.sm}>{t}</Text>)}</Pressable>)}</View></>}
   {tab=='hist'&&<><Text style={s.h1}>Verlauf</Text>
@@ -103,7 +105,7 @@ export default function App(){
     <Text style={s.b}>{b[0]}</Text><Text style={[s.mu,{textAlign:'center',fontSize:13}]}>{b[1]}</Text></View>)}</View></>}
   </ScrollView>
   {tab=='home'&&<View style={s.cta2}><Btn t="Training starten" on={()=>setWk(ids)}/></View>}
-  <View style={s.nav}>{[['home','Training'],['glow','Glow-up'],['hist','Verlauf'],['bd','Abzeichen']].map(([k,l])=><Pressable key={k} style={s.navB} onPress={()=>{setTab(k);setOpen(null)}}><Text style={{color:tab==k?C.ac:C.mu,fontWeight:'700'}}>{l}</Text></Pressable>)}</View>
+  <View style={s.nav}>{[['home','Training'],['today','Heute'],['glow','Glow-up'],['hist','Verlauf'],['bd','Abzeichen']].map(([k,l])=><Pressable key={k} style={s.navB} onPress={()=>{setTab(k);setOpen(null)}}><Text style={{color:tab==k?C.ac:C.mu,fontWeight:'700',fontSize:12}}>{l}</Text></Pressable>)}</View>
  </SafeAreaView>}
 
 const s=StyleSheet.create({
