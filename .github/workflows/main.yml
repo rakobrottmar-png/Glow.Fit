@@ -1,0 +1,29 @@
+name: Build IPA
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npx expo install --fix
+      - run: npx expo prebuild --platform ios
+      - name: Archive ohne Signatur
+        run: |
+          cd ios
+          xcodebuild -workspace GlowFit.xcworkspace -scheme GlowFit -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -archivePath "$PWD/build/GlowFit.xcarchive" archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+      - name: IPA packen
+        run: |
+          mkdir Payload
+          cp -R ios/build/GlowFit.xcarchive/Products/Applications/GlowFit.app Payload/
+          zip -r GlowFit.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GlowFit-ipa
+          path: GlowFit.ipa
