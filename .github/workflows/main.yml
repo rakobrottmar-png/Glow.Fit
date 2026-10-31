@@ -13,14 +13,20 @@ jobs:
           node-version: 20
       - run: npm install
       - run: npx expo install --fix
+      - name: JS pruefen
+        run: |
+          set -o pipefail
+          npx expo export --platform ios 2>&1 | tee js.log || {
+            { echo '```'; tail -30 js.log | fold -w 70; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          }
       - run: npx expo prebuild --platform ios
       - name: Archive ohne Signatur
         run: |
           cd ios
           set -o pipefail
-          xcodebuild -workspace GlowFit.xcworkspace -scheme GlowFit -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -archivePath "$PWD/build/GlowFit.xcarchive" archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" 2>&1 | tee ../build.log || {
-            { echo '```'; grep -iE "error|failed|fatal|not found|unable" ../build.log | sort -u | head -30 | cut -c1-300; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
-            { echo '```'; tail -40 ../build.log | cut -c1-300; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          xcodebuild -quiet -workspace GlowFit.xcworkspace -scheme GlowFit -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -archivePath "$PWD/build/GlowFit.xcarchive" archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" 2>&1 | tee ../build.log || {
+            { echo '```'; (grep -E ": error:|fatal error|ld: |FAILED|commands failed" -A3 ../build.log || true) | cut -c1-200 | head -30 | fold -w 70; echo '--- Ende ---'; tail -15 ../build.log | cut -c1-200 | fold -w 70; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           }
       - name: IPA packen
@@ -29,6 +35,12 @@ jobs:
           cp -R ios/build/GlowFit.xcarchive/Products/Applications/GlowFit.app Payload/
           zip -r GlowFit.ipa Payload
       - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-log
+          path: build.log
+      - uses: actions/upload-artifact@v4
         with:
           name: GlowFit-ipa
           path: GlowFit.ipa
+
