@@ -16,6 +16,12 @@
     {
      "motionPermission": "GlowFit zählt deine Schritte."
     }
+   ],
+   [
+    "expo-camera",
+    {
+     "cameraPermission": "GlowFit scannt dein Essen mit der Kamera."
+    }
    ]
   ]
  }

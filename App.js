@@ -4,6 +4,7 @@ import Svg,{Polyline,Circle,Rect,Line} from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useKeepAwake} from 'expo-keep-awake';
 import Today from './Today';
+import Coach,{loadPlans,deletePlan} from './Coach';
 import {Z,E,ST,PL,poseKey,G,BD,earned} from './data';
 
 const C={bg:'#06080a',card:'#10161b',line:'#1e2a32',ac:'#46e6d6',ac2:'#4cc3ff',tx:'#f3f8f9',mu:'#8a9aa3'};
@@ -66,7 +67,7 @@ export default function App(){
  const d0=new Date().getDay();
  const [tab,setTab]=useState('home'),[plan,setPlan]=useState((d0==1||d0==5)?'A':d0==3?'B':'S'),[str,setStr]=useState(true),[rest,setRest]=useState(75);
  const [H,setH]=useState([]),[wk,setWk]=useState(null),[res,setRes]=useState(null),[open,setOpen]=useState(null);
- useEffect(()=>{(async()=>{setStr(await load('str',true));setRest(await load('rest',75));setH(await load('hist',[]))})()},[]);
+ useEffect(()=>{(async()=>{setStr(await load('str',true));setRest(await load('rest',75));setH(await load('hist',[]));await loadPlans();setH(h=>[...h])})()},[]);
  const ids=[...PL[plan].ex,...(plan!='S'&&str?ST:[])];
  const nm=PL[plan].n+(plan!='S'&&str?' + Dehnen':'');
  function finish(r){const b0=earned(H);const nh=[...H,{t:Date.now(),p:nm,s:r.s,n:r.n}];const b1=earned(nh);setH(nh);save('hist',nh);
@@ -87,12 +88,13 @@ export default function App(){
    <Text style={s.h1}>GlowFit</Text><Text style={s.mu}>Dein nächster Satz.</Text>
    <View style={[s.card,s.row]}><Ring size={130} rings={rings.map(r=>({r:r.r,w:11,col:r.col,p:r.v/r.g}))}/>
     <View style={{flex:1,marginLeft:14}}><Text style={s.b}>Diese Woche</Text>{rings.map(r=><Text key={r.l} style={{color:r.col,fontWeight:'800'}}>{Math.round(r.v)}<Text style={[s.mu,{fontWeight:'400'}]}>/{r.g} {r.l}</Text></Text>)}</View></View>
-   <View style={s.two}>{Object.keys(PL).map(k=><Pressable key={k} onPress={()=>setPlan(k)} style={[s.chip,plan==k&&s.chipOn]}><Text style={[s.b,plan==k&&{color:'#02161a'}]}>{PL[k].n}</Text><Text style={[s.mu,{fontSize:12},plan==k&&{color:'#04323a'}]}>{PL[k].s}</Text></Pressable>)}</View>
+   <View style={[s.two,{flexWrap:'wrap'}]}>{Object.keys(PL).map(k=><Pressable key={k} onPress={()=>setPlan(k)} onLongPress={()=>k[0]=='C'&&Alert.alert('Plan löschen?',PL[k].n,[{text:'Abbrechen'},{text:'Löschen',style:'destructive',onPress:async()=>{await deletePlan(k);setPlan('A')}}])} style={[s.chip,plan==k&&s.chipOn]}><Text style={[s.b,plan==k&&{color:'#02161a'}]}>{PL[k].n}</Text><Text style={[s.mu,{fontSize:12},plan==k&&{color:'#04323a'}]}>{PL[k].s}</Text></Pressable>)}</View>
    <View style={[s.card,s.row]}><View><Text style={s.b}>Satzpause</Text><Text style={s.mu}>im Training anpassbar</Text></View><View style={s.row}><Pressable style={s.sq} onPress={()=>rs(-15)}><Text style={s.tx}>–</Text></Pressable><Text style={[s.b,{marginHorizontal:10}]}>{rest} s</Text><Pressable style={s.sq} onPress={()=>rs(15)}><Text style={s.tx}>+</Text></Pressable></View></View>
    {plan!='S'&&<View style={[s.card,s.row]}><View><Text style={s.b}>Dehnen danach</Text><Text style={s.mu}>5 Dehnübungen am Ende</Text></View><Pressable style={[s.sq,{width:60},str&&{backgroundColor:C.ac}]} onPress={()=>{setStr(!str);save('str',!str)}}><Text style={[s.tx,str&&{color:'#02161a'}]}>{str?'An':'Aus'}</Text></Pressable></View>}
    <View style={s.card}>{ids.map(id=><Pressable key={id} onPress={()=>setOpen(open==id?null:id)} style={s.item}><Text style={s.b}>{E[id].n}</Text><Text style={s.mu}>{E[id].sets>1?E[id].sets+' × ':''}{E[id].t}</Text>
     {open==id&&<View style={{marginTop:8}}><Fig k={poseKey[id]}/><Text style={s.sm}>{E[id].d}</Text></View>}</Pressable>)}</View></>}
   {tab=='today'&&<Today/>}
+  {tab=='coach'&&<Coach/>}
   {tab=='glow'&&<><Text style={s.h1}>Glow-up</Text><Text style={s.mu}>Allgemeine persönliche Orientierung, keine Diät- oder Kalorienberechnung.</Text>
    <View style={s.card}>{G.map(g=><Pressable key={g[0]} onPress={()=>setOpen(open==g[0]?null:g[0])} style={s.item}><Text style={s.b}>{g[0]}</Text>{open==g[0]&&g[1].map((t,i)=><Text key={i} style={s.sm}>{t}</Text>)}</Pressable>)}</View></>}
   {tab=='hist'&&<><Text style={s.h1}>Verlauf</Text>
@@ -105,7 +107,7 @@ export default function App(){
     <Text style={s.b}>{b[0]}</Text><Text style={[s.mu,{textAlign:'center',fontSize:13}]}>{b[1]}</Text></View>)}</View></>}
   </ScrollView>
   {tab=='home'&&<View style={s.cta2}><Btn t="Training starten" on={()=>setWk(ids)}/></View>}
-  <View style={s.nav}>{[['home','Training'],['today','Heute'],['glow','Glow-up'],['hist','Verlauf'],['bd','Abzeichen']].map(([k,l])=><Pressable key={k} style={s.navB} onPress={()=>{setTab(k);setOpen(null)}}><Text style={{color:tab==k?C.ac:C.mu,fontWeight:'700',fontSize:12}}>{l}</Text></Pressable>)}</View>
+  <View style={s.nav}>{[['home','Training'],['today','Heute'],['coach','Coach'],['glow','Glow-up'],['hist','Verlauf'],['bd','Abzeichen']].map(([k,l])=><Pressable key={k} style={s.navB} onPress={()=>{setTab(k);setOpen(null)}}><Text style={{color:tab==k?C.ac:C.mu,fontWeight:'700',fontSize:11}}>{l}</Text></Pressable>)}</View>
  </SafeAreaView>}
 
 const s=StyleSheet.create({
@@ -114,7 +116,7 @@ const s=StyleSheet.create({
  b:{color:C.tx,fontWeight:'700',fontSize:16},mu:{color:C.mu,fontSize:14},sm:{color:C.tx,fontSize:14,lineHeight:20,marginTop:6},
  card:{backgroundColor:C.card,borderColor:C.line,borderWidth:1,borderRadius:18,padding:14,marginVertical:6},
  row:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'},two:{flexDirection:'row',gap:10},
- chip:{flex:1,padding:12,borderRadius:14,borderWidth:1,borderColor:C.line,backgroundColor:C.card,alignItems:'center'},chipOn:{backgroundColor:C.ac,borderColor:C.ac},
+ chip:{flex:1,minWidth:'30%',padding:12,borderRadius:14,borderWidth:1,borderColor:C.line,backgroundColor:C.card,alignItems:'center'},chipOn:{backgroundColor:C.ac,borderColor:C.ac},
  sq:{width:42,height:42,borderRadius:12,borderWidth:1,borderColor:C.line,backgroundColor:C.card,alignItems:'center',justifyContent:'center'},
  btn:{height:60,borderRadius:18,backgroundColor:C.ac,alignItems:'center',justifyContent:'center'},alt:{backgroundColor:C.card,borderWidth:1,borderColor:C.line},btnT:{color:'#02161a',fontSize:20,fontWeight:'800'},
  cta:{position:'absolute',left:16,right:16,bottom:24,gap:10},cta2:{position:'absolute',left:16,right:16,bottom:84},
