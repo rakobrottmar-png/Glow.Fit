@@ -19,7 +19,8 @@ jobs:
           cd ios
           set -o pipefail
           xcodebuild -workspace GlowFit.xcworkspace -scheme GlowFit -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -archivePath "$PWD/build/GlowFit.xcarchive" archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" 2>&1 | tee ../build.log || {
-            grep -E "error:" ../build.log | sort -u | head -8 | while read -r l; do echo "::error::$l"; done
+            { echo '```'; grep -iE "error|failed|fatal|not found|unable" ../build.log | sort -u | head -30 | cut -c1-300; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            { echo '```'; tail -40 ../build.log | cut -c1-300; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           }
       - name: IPA packen
