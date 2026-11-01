@@ -48,10 +48,10 @@ export default function Coach(){
     {(d.meals||[]).map((x,j)=><Text key={j} style={s.sm}>{x.name} · {x.kcal} kcal · {x.protein} g P</Text>)}</View>)}</View>:null}
  </View>}
 
-const s=StyleSheet.create({h1:{color:C.tx,fontSize:30,fontWeight:'800',marginBottom:8},b:{color:C.tx,fontWeight:'700',fontSize:16},mu:{color:C.mu,fontSize:14},tx:{color:C.tx,fontSize:15,lineHeight:21},sm:{color:C.tx,fontSize:14,marginTop:4},
+const s=StyleSheet.create({h1:{color:C.tx,fontSize:34,fontWeight:'800',letterSpacing:-0.5,marginBottom:8},b:{color:C.tx,fontWeight:'700',fontSize:16},mu:{color:C.mu,fontSize:15},tx:{color:C.tx,fontSize:15,lineHeight:21},sm:{color:C.tx,fontSize:14,marginTop:4},
  row:{flexDirection:'row',flexWrap:'wrap',gap:8,marginBottom:6},row2:{flexDirection:'row',justifyContent:'space-between',alignItems:'center'},
- sug:{borderWidth:1,borderColor:C.line,backgroundColor:C.card,borderRadius:20,paddingVertical:8,paddingHorizontal:12},sugT:{color:C.ac,fontSize:13,fontWeight:'600'},
+ sug:{borderWidth:1,borderColor:C.line,backgroundColor:C.card,borderRadius:20,paddingVertical:12,paddingHorizontal:14},sugT:{color:C.ac,fontSize:13,fontWeight:'600'},
  msg:{borderRadius:16,padding:12,marginVertical:5,maxWidth:'92%'},me:{alignSelf:'flex-end',backgroundColor:'#12303a'},ai:{alignSelf:'flex-start',backgroundColor:C.card,borderWidth:1,borderColor:C.line},
- card:{backgroundColor:C.card,borderColor:C.line,borderWidth:1,borderRadius:18,padding:14,marginVertical:6},day:{borderTopWidth:1,borderColor:C.line,paddingVertical:8,marginTop:6},
+ card:{backgroundColor:C.card,borderColor:C.line,borderWidth:1,borderRadius:20,padding:16,marginVertical:8},day:{borderTopWidth:1,borderColor:C.line,paddingVertical:8,marginTop:6},
  in:{color:C.tx,borderWidth:1,borderColor:C.line,borderRadius:12,padding:12,marginBottom:8,minHeight:44,fontSize:16,backgroundColor:'#0b1115'},
- btn:{height:48,borderRadius:14,backgroundColor:C.ac,alignItems:'center',justifyContent:'center',marginTop:8},btnT:{color:'#02161a',fontSize:16,fontWeight:'800'}});
+ btn:{height:52,borderRadius:14,backgroundColor:C.ac,alignItems:'center',justifyContent:'center',marginTop:8},btnT:{color:'#02161a',fontSize:16,fontWeight:'800'}});

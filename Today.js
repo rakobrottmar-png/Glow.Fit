@@ -71,9 +71,9 @@ export default function Today(){
  </View>}
 
 const s=StyleSheet.create({
- h1:{color:C.tx,fontSize:30,fontWeight:'800',marginBottom:4},b:{color:C.tx,fontWeight:'700',fontSize:16},mu:{color:C.mu,fontSize:14},tx:{color:C.tx,fontSize:14,fontWeight:'600'},
- card:{backgroundColor:C.card,borderColor:C.line,borderWidth:1,borderRadius:18,padding:14,marginVertical:6},row:{flexDirection:'row',alignItems:'center'},
+ h1:{color:C.tx,fontSize:34,fontWeight:'800',letterSpacing:-0.5,marginBottom:8},b:{color:C.tx,fontWeight:'700',fontSize:16},mu:{color:C.mu,fontSize:15},tx:{color:C.tx,fontSize:14,fontWeight:'600'},
+ card:{backgroundColor:C.card,borderColor:C.line,borderWidth:1,borderRadius:20,padding:16,marginVertical:8},row:{flexDirection:'row',alignItems:'center'},
  big:{color:C.ac,fontSize:40,fontWeight:'800'},bar:{height:6,backgroundColor:C.line,borderRadius:6,overflow:'hidden',marginVertical:8},barI:{height:6,backgroundColor:C.ac2},
  in:{color:C.tx,borderWidth:1,borderColor:C.line,borderRadius:12,padding:12,marginVertical:8,minHeight:44,fontSize:16,backgroundColor:'#0b1115'},
- btn:{height:52,borderRadius:16,backgroundColor:C.ac,alignItems:'center',justifyContent:'center',marginTop:8},alt:{backgroundColor:C.card,borderWidth:1,borderColor:C.line},btnT:{color:'#02161a',fontSize:17,fontWeight:'800'},
- cam:{flex:1,backgroundColor:'#000'},x:{width:38,height:38,alignItems:'center',justifyContent:'center'}});
+ btn:{height:56,borderRadius:16,backgroundColor:C.ac,alignItems:'center',justifyContent:'center',marginTop:8},alt:{backgroundColor:C.card,borderWidth:1,borderColor:C.line},btnT:{color:'#02161a',fontSize:17,fontWeight:'800'},
+ cam:{flex:1,backgroundColor:'#000'},x:{width:44,height:44,alignItems:'center',justifyContent:'center'}});
